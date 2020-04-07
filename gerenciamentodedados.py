@@ -46,7 +46,7 @@ class Diretorio(object):
 		return dir
 
 	def processar(self):
-		
+		print('Diretorio inicial: ', self.origem)		
 
 
 def main():
