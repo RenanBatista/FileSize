@@ -8,60 +8,85 @@ class bcolors:
     ENDC = '\033[0m'
 
 
-class SubDiretorio(object):
-	def __init__(self, diretorioOrigem, posicao):
-		self.diretorio = diretorio
+class SubDiretorio(object): #Essa classe pode ser ser removida colocando certos parametros como opcionais
+	def __init__(self, diretorioOrigem, diretorioDestino, posicao):
+		self.diretorioDestino = diretorioDestino
+		self.diretorioOrigem = diretorioOrigem
 		self.posicao = posicao
-		self.acessar(self.diretorio)
-		self.listagemDoDiretorio(self.diretorio, posicao)
+		if(self.acessar(self.diretorioDestino)):
+			self.listagemDoDiretorio(self.diretorioDestino, posicao)
 
 	def listagemDoDiretorio(self, diretorio, posicao):
 		dir = []
 		arq = []
-		for entry in os.scandir(self.origem + '/' + diretorio):
+		diretorioAtual = os.getcwd()
+
+		for entry in os.scandir(diretorioAtual):
 			if not entry.name.startswith('.') and entry.is_file():
 				arq.append(entry.name)
 				sys.stdout.write('|')
-				for pos in range(posicao):
+				for pos in range(self.posicao):
 					sys.stdout.write('-')
-				print(bcolors.ARQUIVO + entry.name + bcolors.ENDC)
+				print(bcolors.ARQUIVO + entry.name + "    " + self.diretorioOrigem + bcolors.ENDC)
 			if not entry.name.startswith('.') and entry.is_dir():
 				dir.append(entry.name)
-				sys.stdout.write('|')
-				for pos in range(posicao):
-					sys.stdout.write('-')
-				print(bcolors.DIRETORIO + entry.name + bcolors.ENDC)
+				
+		self.posicao += 1
+		for novoDestino in dir:
+			sys.stdout.write('|')
+			for pos in range(self.posicao):
+				sys.stdout.write('-')
+			print(bcolors.DIRETORIO + novoDestino + "    " + diretorioAtual + bcolors.ENDC)
+			var = SubDiretorio(diretorioAtual, novoDestino, self.posicao)
+			del var
+		
+		os.chdir(self.diretorioOrigem)
+
 		return dir
 
 	def acessar(self, diretorio):
 		try:
-			os.chdir(self.diretorio)
+			os.chdir(diretorio)
 		except NotADirectoryError:
-			print('Erro: O caminho passado não é referente a um diretorio')
+			#print('Erro: O caminho passado não é referente a um diretorio')
+			return False
 		except FileNotFoundError:
-			print('Erro: Arquivo não encontrado')
+			#print('Erro: Arquivo não encontrado')
+			return False
 		except PermissionError:
-			print('Erro: Não é permitido acessar o arquivo')
+			#print('Erro: Não é permitido acessar o arquivo')
+			return False
 		except OSError:
-			print('Erro: Erro desconhecido')
+			#print('Erro: Erro desconhecido')
+			return False
 		finally:
-			self.listagemDoDiretorio(self.checar)
+			return True
 
 	def retornar(self, diretorio):
 		try:
-			os.chdir(self.diretorio)
+			os.chdir(diretorio)
 		except NotADirectoryError:
-			print('Erro: O caminho passado não é referente a um diretorio')
+			#print('Erro: O caminho passado não é referente a um diretorio')
+			pass
 		except FileNotFoundError:
-			print('Erro: Arquivo não encontrado')
+			#print('Erro: Arquivo não encontrado')
+			pass
 		except PermissionError:
-			print('Erro: Não é permitido acessar o arquivo')
+			#print('Erro: Não é permitido acessar o arquivo')
+			pass
 		except OSError:
-			print('Erro: Erro desconhecido')
+			#print('Erro: Erro desconhecido')
+			pass
 		finally:
-			self.listagemDoDiretorio(self.checar)
+			self.listagemDoDiretorio(self.checar, 1)
 
 class Diretorio(object):
+
+	#Receber a pasta de origem
+	#Listar todos os diretorios e arquivos internos <------------------------------------|
+	#Acessar o n-diretorio (Criar uma instancia da classe que represente n-diretorio)    |Loop
+	#Listar >----------------------------------------------------------------------------|
+
 	"""docstring for Diretorio"""
 	def __init__(self, checar):
 		self.checar = checar
@@ -73,13 +98,17 @@ class Diretorio(object):
 		try:
 			os.chdir(self.origem)
 		except NotADirectoryError:
-			print('Erro: O caminho passado não é referente a um diretorio')
+			#print('Erro: O caminho passado não é referente a um diretorio')
+			pass
 		except FileNotFoundError:
-			print('Erro: Arquivo não encontrado')
+			#print('Erro: Arquivo não encontrado')
+			pass
 		except PermissionError:
-			print('Erro: Não é permitido acessar o arquivo')
+			#print('Erro: Não é permitido acessar o arquivo')
+			pass
 		except OSError:
-			print('Erro: Erro desconhecido')
+			#print('Erro: Erro desconhecido')
+			pass
 		finally:
 			self.listagemDoDiretorio(self.checar)
 
@@ -93,18 +122,14 @@ class Diretorio(object):
 				print(bcolors.ARQUIVO + entry.name + bcolors.ENDC)
 			if not entry.name.startswith('.') and entry.is_dir():
 				dir.append(entry.name)
-				sys.stdout.write('|-')
-				print(bcolors.DIRETORIO + entry.name + bcolors.ENDC)
-		for diretorio in dir:
-			var = SubDiretorio(diretorio, 1)
+				
+		for pasta in dir:
+			sys.stdout.write('|-')
+			print(bcolors.DIRETORIO + pasta + bcolors.ENDC)
+			var = SubDiretorio((self.origem + '/' + diretorio), pasta, 2)
 		return dir
 
-	def processar(self):
-		print('Diretorio inicial: ', self.origem)
-		#Receber a pasta de origem
-		#Listar todos os diretorios e arquivos internos <------------------------------------|
-		#Acessar o n-diretorio (Criar uma instancia da classe que represente n-diretorio)    |Loop
-		#Listar >----------------------------------------------------------------------------|
+
 
 
 
