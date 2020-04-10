@@ -8,8 +8,15 @@ class bcolors:
     ENDC = '\033[0m'
 
 
-class SubDiretorio(object): #Essa classe pode ser ser removida colocando certos parametros como opcionais
-	def __init__(self, diretorioOrigem, diretorioDestino, posicao):
+class SubDiretorio(object):
+	
+	#Receber a pasta de origem
+	#Listar todos os diretorios e arquivos internos <------------------------------------|
+	#Acessar o n-diretorio (Criar uma instancia da classe que represente n-diretorio)    |Loop
+	#Listar >----------------------------------------------------------------------------|
+
+
+	def __init__(self, diretorioOrigem='.', diretorioDestino='.', posicao=0):
 		self.diretorioDestino = diretorioDestino
 		self.diretorioOrigem = diretorioOrigem
 		self.posicao = posicao
@@ -27,7 +34,7 @@ class SubDiretorio(object): #Essa classe pode ser ser removida colocando certos 
 				sys.stdout.write('|')
 				for pos in range(self.posicao):
 					sys.stdout.write('-')
-				print(bcolors.ARQUIVO + entry.name + "    " + self.diretorioOrigem + bcolors.ENDC)
+				print(bcolors.ARQUIVO + entry.name + "    " + diretorioAtual + bcolors.ENDC)
 			if not entry.name.startswith('.') and entry.is_dir():
 				dir.append(entry.name)
 				
@@ -36,8 +43,8 @@ class SubDiretorio(object): #Essa classe pode ser ser removida colocando certos 
 			sys.stdout.write('|')
 			for pos in range(self.posicao):
 				sys.stdout.write('-')
-			print(bcolors.DIRETORIO + novoDestino + "    " + diretorioAtual + bcolors.ENDC)
-			var = SubDiretorio(diretorioAtual, novoDestino, self.posicao)
+			print(bcolors.DIRETORIO + novoDestino + "    " + diretorioAtual + '/' +  novoDestino + bcolors.ENDC)
+			var = SubDiretorio(diretorioOrigem=diretorioAtual, diretorioDestino=novoDestino, posicao=self.posicao)
 			del var
 		
 		os.chdir(self.diretorioOrigem)
@@ -80,58 +87,6 @@ class SubDiretorio(object): #Essa classe pode ser ser removida colocando certos 
 		finally:
 			self.listagemDoDiretorio(self.checar, 1)
 
-class Diretorio(object):
-
-	#Receber a pasta de origem
-	#Listar todos os diretorios e arquivos internos <------------------------------------|
-	#Acessar o n-diretorio (Criar uma instancia da classe que represente n-diretorio)    |Loop
-	#Listar >----------------------------------------------------------------------------|
-
-	"""docstring for Diretorio"""
-	def __init__(self, checar):
-		self.checar = checar
-		print(self.checar)
-		self.origem = os.getcwd()
-		super(Diretorio, self).__init__()
-
-	def acessar(self):
-		try:
-			os.chdir(self.origem)
-		except NotADirectoryError:
-			#print('Erro: O caminho passado não é referente a um diretorio')
-			pass
-		except FileNotFoundError:
-			#print('Erro: Arquivo não encontrado')
-			pass
-		except PermissionError:
-			#print('Erro: Não é permitido acessar o arquivo')
-			pass
-		except OSError:
-			#print('Erro: Erro desconhecido')
-			pass
-		finally:
-			self.listagemDoDiretorio(self.checar)
-
-	def listagemDoDiretorio(self, diretorio):
-		dir = []
-		arq = []
-		for entry in os.scandir(self.origem + '/' + diretorio):
-			if not entry.name.startswith('.') and entry.is_file():
-				arq.append(entry.name)
-				sys.stdout.write('|-')
-				print(bcolors.ARQUIVO + entry.name + bcolors.ENDC)
-			if not entry.name.startswith('.') and entry.is_dir():
-				dir.append(entry.name)
-				
-		for pasta in dir:
-			sys.stdout.write('|-')
-			print(bcolors.DIRETORIO + pasta + bcolors.ENDC)
-			var = SubDiretorio((self.origem + '/' + diretorio), pasta, 2)
-		return dir
-
-
-
-
 
 def main():
 	#argv[1] = diretorio em que o script fara a varredura
@@ -139,8 +94,8 @@ def main():
 	#Irá fazer a varredura dois diretórios atrás
 
 	try:
-		var = Diretorio(sys.argv[1])
-		var.acessar()
+		var = SubDiretorio(diretorioDestino=sys.argv[1])
+		#var.acessar()
 	except Exception as e:
 		raise
 	else:
