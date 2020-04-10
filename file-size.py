@@ -21,7 +21,7 @@ class SubDiretorio(object):
 		self.diretorioOrigem = diretorioOrigem
 		self.posicao = posicao
 		if(self.acessar(self.diretorioDestino)):
-			self.listagemDoDiretorio(self.diretorioDestino, posicao)
+			self.listagemDoDiretorio(self.diretorioDestino, posicao)	
 
 	def listagemDoDiretorio(self, diretorio, posicao):
 		dir = []
@@ -37,14 +37,13 @@ class SubDiretorio(object):
 				print(bcolors.ARQUIVO + entry.name + "    " + diretorioAtual + bcolors.ENDC)
 			if not entry.name.startswith('.') and entry.is_dir():
 				dir.append(entry.name)
-				
-		self.posicao += 1
+
 		for novoDestino in dir:
 			sys.stdout.write('|')
 			for pos in range(self.posicao):
 				sys.stdout.write('-')
 			print(bcolors.DIRETORIO + novoDestino + "    " + diretorioAtual + '/' +  novoDestino + bcolors.ENDC)
-			var = SubDiretorio(diretorioOrigem=diretorioAtual, diretorioDestino=novoDestino, posicao=self.posicao)
+			var = SubDiretorio(diretorioOrigem=diretorioAtual, diretorioDestino=novoDestino, posicao=self.posicao+1)
 			del var
 		
 		os.chdir(self.diretorioOrigem)
@@ -69,24 +68,6 @@ class SubDiretorio(object):
 		finally:
 			return True
 
-	def retornar(self, diretorio):
-		try:
-			os.chdir(diretorio)
-		except NotADirectoryError:
-			#print('Erro: O caminho passado não é referente a um diretorio')
-			pass
-		except FileNotFoundError:
-			#print('Erro: Arquivo não encontrado')
-			pass
-		except PermissionError:
-			#print('Erro: Não é permitido acessar o arquivo')
-			pass
-		except OSError:
-			#print('Erro: Erro desconhecido')
-			pass
-		finally:
-			self.listagemDoDiretorio(self.checar, 1)
-
 
 def main():
 	#argv[1] = diretorio em que o script fara a varredura
@@ -94,7 +75,7 @@ def main():
 	#Irá fazer a varredura dois diretórios atrás
 
 	try:
-		var = SubDiretorio(diretorioDestino=sys.argv[1])
+		SubDiretorio(diretorioDestino=sys.argv[1])
 		#var.acessar()
 	except Exception as e:
 		raise
