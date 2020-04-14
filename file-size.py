@@ -14,8 +14,6 @@ class SubDiretorio(object):
 	#Listar todos os diretorios e arquivos internos <------------------------------------|
 	#Acessar o n-diretorio (Criar uma instancia da classe que represente n-diretorio)    |Loop
 	#Listar >----------------------------------------------------------------------------|
-
-
 	def __init__(self, diretorioOrigem='.', diretorioDestino='.', posicao=0):
 		self.diretorioDestino = diretorioDestino
 		self.diretorioOrigem = diretorioOrigem
@@ -78,14 +76,12 @@ def main():
 		SubDiretorio(diretorioDestino=sys.argv[1])
 		#var.acessar()
 	except Exception as e:
+		print(e)
 		raise
-	else:
-		pass
 	finally:
 		pass
 	
-	pass
-
+	
 
 if __name__ == "__main__":
 	main()
