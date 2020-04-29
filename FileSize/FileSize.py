@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 
 
 class bcolors:
@@ -32,8 +33,7 @@ class SubDiretorio(object):
                 sys.stdout.write('|')
                 for _ in range(self.posicao):
                     sys.stdout.write('-')
-                print(bcolors.ARQUIVO + entry.name +
-                      "    " + diretorioAtual + bcolors.ENDC)
+                self.imprimirArquivo(diretorioAtual, entry.name)
             if not entry.name.startswith('.') and entry.is_dir():
                 dir.append(entry.name)
 
@@ -41,8 +41,8 @@ class SubDiretorio(object):
             sys.stdout.write('|')
             for _ in range(self.posicao):
                 sys.stdout.write('-')
-            print(bcolors.DIRETORIO + novoDestino + "    " +
-                  diretorioAtual + '/' + novoDestino + bcolors.ENDC)
+            self.imprimirDiretorio(novoDestino, diretorioAtual)
+
             var = SubDiretorio(diretorioOrigem=diretorioAtual,
                                diretorioDestino=novoDestino, posicao=self.posicao+1)
             del var
@@ -50,6 +50,14 @@ class SubDiretorio(object):
         os.chdir(self.diretorioOrigem)
 
         return dir
+
+    def imprimirArquivo(self, destino, arquivo):
+        print(bcolors.ARQUIVO + arquivo +
+              "    " + str(self.checkSize(destino + '/' + arquivo)) + bcolors.ENDC)
+
+    def imprimirDiretorio(self, destino, diretorioAtual):
+        print(bcolors.DIRETORIO + destino + "    " +
+              diretorioAtual + '/' + destino + bcolors.ENDC)
 
     def acessar(self, diretorio):
         try:
@@ -68,6 +76,9 @@ class SubDiretorio(object):
             return False
         finally:
             return True
+
+    def checkSize(self, fpath):
+        return Path(fpath).stat().st_size
 
 
 def main():
